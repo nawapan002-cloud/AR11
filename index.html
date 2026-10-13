@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เกมการศึกษา: นักแก้ปัญหาตัวจิ๋ว (ป.3)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Prompt for Thai typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            font-family: 'Prompt', sans-serif;
+            user-select: none;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            min-height: 100vh;
+        }
+
+        .bg-pattern {
+            background-image: radial-gradient(#4fd1c5 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .bouncy {
+            animation: bouncy 2s infinite ease-in-out;
+        }
+
+        @keyframes bouncy {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .pop-in {
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .btn-game {
+            transition: all 0.15s ease;
+            box-shadow: 0 6px 0 shadow-color, 0 10px 10px rgba(0,0,0,0.15);
+        }
+
+        .btn-game:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 shadow-color, 0 4px 5px rgba(0,0,0,0.15);
+        }
+
+        .card-glass {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 4px solid #ffffff;
+        }
+
+        .star-gold {
+            color: #fbbf24;
+            filter: drop-shadow(0 2px 4px rgba(251, 191, 36, 0.5));
+        }
+
+        .star-gray {
+            color: #d1d5db;
+        }
+    </style>
+</head>
+<body class="bg-pattern flex items-center justify-center min-h-screen p-2 sm:p-4">
+
+    <div id="game-container" class="w-full max-w-4xl bg-white/80 rounded-3xl shadow-2xl overflow-hidden border-4 border-white flex flex-col min-h-[600px] relative">
+        
+        <!-- ================= START SCREEN ================= -->
+        <div id="screen-start" class="flex flex-col items-center justify-center p-6 sm:p-10 text-center my-auto min-h-[580px]">
+            <div class="bouncy mb-4">
+                <span class="text-7xl sm:text-8xl">🧩</span>
+            </div>
+            <span class="bg-yellow-400 text-yellow-900 font-bold px-4 py-1 rounded-full text-sm sm:text-base mb-2">
+                วิชาวิทยาการคำนวณ ชั้นประถมศึกษาปีที่ 3
+            </span>
+            <h1 class="text-3xl sm:text-5xl font-extrabold text-indigo-700 mb-4 drop-shadow-sm">
+                นักแก้ปัญหาตัวจิ๋ว
+            </h1>
+            <p class="text-gray-600 text-base sm:text-lg max-w-md mb-8">
+                มาร่วมเรียนรู้การคิดแก้ปัญหาอย่างเป็นขั้นตอน ผ่านภารกิจสนุก ๆ ในชีวิตประจำวันกันเถอะ!
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-4 w-full max-w-xs sm:max-w-md justify-center">
+                <button onclick="startGame()" class="btn-game bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-8 rounded-2xl text-xl flex items-center justify-center gap-2" style="--shadow-color: #047857;">
+                    <i class="fa-solid fa-play"></i> เริ่มเล่นเกม
+                </button>
+                <button onclick="showScreen('screen-guide')" class="btn-game bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 px-6 rounded-2xl text-lg flex items-center justify-center gap-2" style="--shadow-color: #0369a1;">
+                    <i class="fa-solid fa-book-open"></i> วิธีการเล่น
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= GUIDE SCREEN ================= -->
+        <div id="screen-guide" class="hidden flex-col p-6 sm:p-8 min-h-[580px]">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl sm:text-3xl font-bold text-indigo-700 flex items-center gap-2">
+                    <i class="fa-solid fa-graduation-cap"></i> วิธีการเล่น & จุดประสงค์
+                </h2>
+                <button onclick="showScreen('screen-start')" class="text-gray-400 hover:text-gray-600 text-2xl">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="space-y-4 text-gray-700 text-sm sm:text-base overflow-y-auto pr-2 max-h-[420px]">
+                <div class="bg-indigo-50 p-4 rounded-2xl border-2 border-indigo-100 flex items-start gap-3">
+                    <span class="text-2xl">🎯</span>
+                    <div>
+                        <h3 class="font-bold text-indigo-900 text-lg">เป้าหมายของเกม</h3>
+                        <p>ฝึกทักษะการคิดวิเคราะห์ปัญหา การเรียงลำดับขั้นตอน (Algorithm) และการแก้ไขข้อผิดพลาดเพื่อพิชิตทั้ง 5 ด่าน!</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="bg-amber-50 p-4 rounded-2xl border-2 border-amber-100 flex items-start gap-3">
+                        <span class="text-2xl">1️⃣</span>
+                        <div>
+                            <h4 class="font-bold text-amber-900">วิเคราะห์ปัญหา</h4>
+                            <p class="text-xs sm:text-sm">อ่านสถานการณ์แล้วมองหาว่าปัญหาหรือเป้าหมายคืออะไร</p>
+                        </div>
+                    </div>
+                    <div class="bg-emerald-50 p-4 rounded-2xl border-2 border-emerald-100 flex items-start gap-3">
+                        <span class="text-2xl">2️⃣</span>
+                        <div>
+                            <h4 class="font-bold text-emerald-900">เรียงลำดับขั้นตอน</h4>
+                            <p class="text-xs sm:text-sm">เลือกวิธีแก้ปัญหา และจัดลำดับ ก่อน-หลัง ให้ถูกต้อง</p>
+                        </div>
+                    </div>
+                    <div class="bg-purple-50 p-4 rounded-2xl border-2 border-purple-100 flex items-start gap-3">
+                        <span class="text-2xl">3️⃣</span>
+                        <div>
+                            <h4 class="font-bold text-purple-900">ตรวจสอบความถูกต้อง</h4>
+                            <p class="text-xs sm:text-sm">กดตรวจคำตอบ หากตอบผิดไม่ต้องตกใจ ลองอ่านคำใบ้แล้วแก้ใหม่ได้เลย!</p>
+                        </div>
+                    </div>
+                    <div class="bg-rose-50 p-4 rounded-2xl border-2 border-rose-100 flex items-start gap-3">
+                        <span class="text-2xl">⭐</span>
+                        <div>
+                            <h4 class="font-bold text-rose-900">สะสมดาว</h4>
+                            <p class="text-xs sm:text-sm">ตอบได้ถูกต้องในครั้งแรกรับ 3 ดาวเต็มในแต่ละด่าน!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-auto pt-4 text-center">
+                <button onclick="startGame()" class="btn-game bg-emerald-500 text-white font-bold py-3 px-8 rounded-2xl text-lg" style="--shadow-color: #047857;">
+                    เข้าใจแล้ว! เริ่มลุยเลย <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= LEVEL SELECT SCREEN ================= -->
+        <div id="screen-levels" class="hidden flex-col p-6 sm:p-8 min-h-[580px]">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl sm:text-3xl font-bold text-indigo-700">
+                    🗺️ เลือกด่านภารกิจ
+                </h2>
+                <div class="bg-indigo-100 px-4 py-1.5 rounded-full text-indigo-800 font-bold text-sm sm:text-base flex items-center gap-2">
+                    <span>ดาวรวม:</span>
+                    <span id="total-stars-count" class="text-amber-500 font-extrabold text-lg">0</span>
+                    <span class="text-amber-400">★</span>
+                </div>
+            </div>
+
+            <div id="levels-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto p-1 max-h-[400px]">
+                <!-- Dynamic level cards rendered by JS -->
+            </div>
+
+            <div class="mt-auto pt-4 flex justify-between items-center">
+                <button onclick="showScreen('screen-start')" class="text-gray-500 hover:text-indigo-600 font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-house"></i> กลับหน้าแรก
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= GAMEPLAY SCREEN ================= -->
+        <div id="screen-gameplay" class="hidden flex-col p-4 sm:p-6 min-h-[580px] flex-1">
+            <!-- Header bar -->
+            <div class="flex flex-wrap items-center justify-between gap-2 pb-3 mb-3 border-b-2 border-gray-100">
+                <button onclick="showScreen('screen-levels')" class="text-gray-500 hover:text-indigo-600 font-bold text-sm flex items-center gap-1">
+                    <i class="fa-solid fa-arrow-left"></i> เลือกด่าน
+                </button>
+                
+                <div class="flex items-center gap-3">
+                    <span id="game-level-badge" class="bg-indigo-600 text-white font-bold text-xs sm:text-sm px-3 py-1 rounded-full">
+                        ด่านที่ 1
+                    </span>
+                    <div class="flex text-lg sm:text-xl" id="stars-display">
+                        <i class="fa-solid fa-star star-gold"></i>
+                        <i class="fa-solid fa-star star-gold"></i>
+                        <i class="fa-solid fa-star star-gold"></i>
+                    </div>
+                </div>
+
+                <div class="bg-amber-100 px-3 py-1 rounded-full text-amber-800 font-bold text-xs sm:text-sm">
+                    คะแนน: <span id="current-score" class="text-amber-600 font-extrabold">0</span>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="flex-1 flex flex-col justify-between">
+                <!-- Situation Banner -->
+                <div class="bg-gradient-to-r from-sky-100 to-indigo-100 p-4 rounded-2xl border-2 border-sky-200 mb-4 flex items-start gap-3">
+                    <div class="text-3xl sm:text-4xl" id="level-icon">🎒</div>
+                    <div class="flex-1">
+                        <div class="text-xs font-bold text-sky-700 uppercase tracking-wide">สถานการณ์ปัญหา</div>
+                        <h3 id="level-title" class="font-bold text-indigo-900 text-base sm:text-lg">จัดกระเป๋าไปโรงเรียน</h3>
+                        <p id="level-description" class="text-gray-700 text-xs sm:text-sm mt-0.5">
+                            น้องต้นกำลังเตรียมจัดกระเป๋านักเรียนสำหรับวันพรุ่งนี้ แต่ไม่รู้ว่าจะเริ่มต้นทำอะไรก่อนดี?
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Problem Question -->
+                <div class="mb-4">
+                    <div class="bg-amber-50 border-l-4 border-amber-400 p-3 rounded-r-xl mb-3">
+                        <p id="level-question" class="font-bold text-amber-900 text-sm sm:text-base">
+                            ❓ คำถาม: ขั้นตอนใดควรทำเป็นอันดับแรก?
+                        </p>
+                    </div>
+
+                    <!-- Answer Interactive Container -->
+                    <div id="interactive-area" class="space-y-2">
+                        <!-- Dynamic content for multiple choice or ordering -->
+                    </div>
+                </div>
+
+                <!-- Footer Buttons & Hint -->
+                <div class="pt-2 border-t border-gray-100 flex items-center justify-between gap-2">
+                    <button id="btn-hint" onclick="showHintModal()" class="bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold px-3 py-2 rounded-xl text-xs sm:text-sm flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-lightbulb text-amber-500"></i> ขอคำใบ้
+                    </button>
+
+                    <button id="btn-submit" onclick="checkAnswer()" class="btn-game bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 px-6 rounded-xl text-sm sm:text-base flex items-center gap-2" style="--shadow-color: #047857;">
+                        <i class="fa-solid fa-circle-check"></i> ตรวจคำตอบ
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= SUMMARY SCREEN ================= -->
+        <div id="screen-summary" class="hidden flex-col items-center justify-center p-6 sm:p-10 text-center my-auto min-h-[580px] pop-in">
+            <div class="text-6xl sm:text-7xl mb-2">🏆</div>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-indigo-800 mb-1">
+                ภารกิจเสร็จสิ้น!
+            </h2>
+            <p class="text-gray-600 text-sm sm:text-base mb-6">
+                ยินดีด้วยนะ! น้องคือ <span class="font-bold text-indigo-600">"นักแก้ปัญหาตัวจิ๋ว"</span> ที่เก่งกาจมาก
+            </p>
+
+            <!-- Final Result Card -->
+            <div class="card-glass p-6 rounded-3xl w-full max-w-md shadow-lg border-2 border-indigo-100 mb-6 space-y-4">
+                <div class="flex justify-center items-center gap-2 text-4xl sm:text-5xl" id="summary-stars">
+                    <i class="fa-solid fa-star star-gold"></i>
+                    <i class="fa-solid fa-star star-gold"></i>
+                    <i class="fa-solid fa-star star-gold"></i>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 bg-indigo-50/50 p-3 rounded-2xl text-center">
+                    <div>
+                        <div class="text-xs text-gray-500 font-bold">ดาวรวมที่ได้</div>
+                        <div class="text-2xl font-extrabold text-indigo-700"><span id="summary-total-stars">15</span> / 15</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-500 font-bold">คะแนนรวม</div>
+                        <div class="text-2xl font-extrabold text-amber-600"><span id="summary-total-score">500</span></div>
+                    </div>
+                </div>
+
+                <p id="summary-feedback" class="text-sm text-indigo-900 font-medium">
+                    สุดยอดเลย! น้องเข้าใจขั้นตอนการแก้ปัญหาและตรวจสอบความถูกต้องได้อย่างดีเยี่ยม!
+                </p>
+            </div>
+
+            <div class="flex gap-4">
+                <button onclick="showScreen('screen-levels')" class="btn-game bg-indigo-600 text-white font-bold py-3 px-6 rounded-2xl text-base flex items-center gap-2" style="--shadow-color: #3730a3;">
+                    <i class="fa-solid fa-map-location-dot"></i> ไปที่หน้าเลือกด่าน
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ================= RESULT MODAL ================= -->
+    <div id="modal-result" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl pop-in text-center border-4 border-white relative">
+            <div id="result-icon" class="text-6xl mb-3">🎉</div>
+            <h3 id="result-title" class="text-2xl font-extrabold text-gray-800 mb-2">ถูกต้องแล้วครับ!</h3>
+            <p id="result-message" class="text-gray-600 text-sm sm:text-base mb-6 bg-slate-50 p-4 rounded-2xl border border-slate-100 text-left">
+                คำอธิบายเพิ่มเติมเกี่ยวกับขั้นตอนแก้ปัญหา...
+            </p>
+
+            <div class="flex justify-center gap-3">
+                <button id="btn-result-action" onclick="closeResultModal()" class="btn-game bg-emerald-500 text-white font-bold py-3 px-8 rounded-2xl text-base w-full" style="--shadow-color: #047857;">
+                    ลุยด่านต่อไป <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= HINT MODAL ================= -->
+    <div id="modal-hint" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl pop-in text-center border-4 border-amber-200">
+            <div class="text-5xl mb-2">💡</div>
+            <h3 class="text-xl font-bold text-amber-900 mb-2">คำใบ้จากน้องปัญญา</h3>
+            <p id="hint-text" class="text-gray-700 text-sm mb-6 bg-amber-50 p-3 rounded-xl border border-amber-100">
+                ลองนึกดูสิว่าถ้าเราจะทำอาหาร เราควรเตรียมวัตถุดิบก่อนล้างมือ หรือล้างมือก่อนทำอาหารนะ?
+            </p>
+            <button onclick="closeHintModal()" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-6 rounded-xl text-sm">
+                เข้าใจแล้ว!
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Sound FX Generator using Web Audio API
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new AudioCtx();
+            }
+        }
+
+        function playSound(type) {
+            try {
+                initAudio();
+                if (!audioCtx) return;
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                const now = audioCtx.currentTime;
+
+                if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(400, now);
+                    osc.frequency.exponentialRampToValueAtTime(800, now + 0.05);
+                    gain.gain.setValueAtTime(0.1, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.05);
+                    osc.start(now);
+                    osc.stop(now + 0.05);
+                } else if (type === 'correct') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, now); // C5
+                    osc.frequency.setValueAtTime(659.25, now + 0.08); // E5
+                    osc.frequency.setValueAtTime(783.99, now + 0.16); // G5
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, now);
+                    osc.frequency.setValueAtTime(180, now + 0.1);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+                    osc.start(now);
+                    osc.stop(now + 0.25);
+                } else if (type === 'star') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(587.33, now); // D5
+                    osc.frequency.setValueAtTime(880, now + 0.1); // A5
+                    gain.gain.setValueAtTime(0.1, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+                    osc.start(now);
+                    osc.stop(now + 0.25);
+                }
+            } catch (e) {
+                console.log("Audio play error:", e);
+            }
+        }
+
+        const LEVELS_DATA = [
+            {
+                id: 1,
+                title: "จัดกระเป๋าไปโรงเรียน",
+                icon: "🎒",
+                type: "single_choice",
+                description: "น้องต้นกำลังเตรียมจัดกระเป๋านักเรียนสำหรับวันพรุ่งนี้ เพื่อไม่ให้ลืมสมุดหนังสือ น้องต้นควรทำขั้นตอนใดเป็นอันดับแรก?",
+                question: "❓ ขั้นตอนการแก้ปัญหาใดควรทำก่อนเป็นอันดับแรก?",
+                options: [
+                    { id: "A", text: "ก. ใส่สมุดและหนังสือลงในกระเป๋า", correct: false },
+                    { id: "B", text: "ข. ตรวจดูตารางเรียนของวันพรุ่งนี้", correct: true },
+                    { id: "C", text: "ค. รูดซิปปิดกระเป๋าให้เรียบร้อย", correct: false },
+                    { id: "D", text: "ง. สะพายกระเป๋าเตรียมพร้อมเดินทาง", correct: false }
+                ],
+                hint: "ลองคิดดูสิว่า ถ้าเรายังไม่รู้ว่าพรุ่งนี้เรียนวิชาอะไร เราจะหยิบหนังสือถูกเล่มไหมนะ?",
+                explanation: "ถูกต้องครับ! ขั้นตอนแรกของการจัดกระเป๋าคือ 'การตรวจตารางเรียน' เพื่อให้เรารู้ว่าจะต้องเตรียมหนังสือเล่มไหนบ้าง ก่อนนำใส่กระเป๋าอย่างถูกต้อง"
+            },
+            {
+                id: 2,
+                title: "ทำแซนด์วิชแสนอร่อย",
+                icon: "🥪",
+                type: "sequence",
+                description: "พี่มิกอยากทำแซนด์วิชแฮมชีสเป็นอาหารเช้า มาช่วยพี่มิกเรียงลำดับขั้นตอนการทำอาหารให้ถูกต้องหน่อยครับ!",
+                question: "🧩 คลิกเลือกขั้นตอนเพื่อเรียงลำดับจาก 1 ไป 4 ให้ถูกต้อง:",
+                items: [
+                    { id: "step_bread", text: "วางขนมปังแผ่นที่ 1 บนจาน" },
+                    { id: "step_fill", text: "วางแฮมและชีสลงบนขนมปัง" },
+                    { id: "step_cover", text: "นำขนมปังแผ่นที่ 2 มาวางทับ" },
+                    { id: "step_eat", text: "จัดใส่จานพร้อมรับประทาน" }
+                ],
+                correctOrder: ["step_bread", "step_fill", "step_cover", "step_eat"],
+                hint: "ต้องเริ่มจากฐานล่างสุดก่อนนะ! คือการวางขนมปังแผ่นแรก จากนั้นค่อยใส่ไส้แซนด์วิชลงไป",
+                explanation: "ยอดเยี่ยมมาก! การเรียงลำดับขั้นตอน (Algorithm) ที่ถูกต้อง จะช่วยให้เราทำอาหารได้สำเร็จตามเป้าหมายโดยไม่สับสนครับ"
+            },
+            {
+                id: 3,
+                title: "ตามหาหนังสือในห้องสมุด",
+                icon: "📚",
+                type: "single_choice",
+                description: "มะลิไปห้องสมุดเพื่อยืม 'การ์ตูนความรู้เรื่องวิทยาศาสตร์' แต่หาหนังสือไม่เจอ มะลิควรเลือกวิธีแก้ปัญหาใดที่เหมาะสมที่สุด?",
+                question: "❓ วิธีการแก้ปัญหาที่ถูกขั้นตอนและรวดเร็วที่สุดคือข้อใด?",
+                options: [
+                    { id: "A", text: "ก. เดินสุ่มหาตามชั้นหนังสือไปเรื่อย ๆ ทุกชั้น", correct: false },
+                    { id: "B", text: "ข. ร้องไห้แล้วเดินกลับบ้านทันที", correct: false },
+                    { id: "C", text: "ค. ค้นหารายชื่อหนังสือในคอมพิวเตอร์เพื่อดูหมวดหมู่และเลขชั้น", correct: true },
+                    { id: "D", text: "ง. หยิบหนังสือเล่มอื่นที่คุณครูไม่ได้สั่งไปแทน", correct: false }
+                ],
+                hint: "ห้องสมุดมีคอมพิวเตอร์สำหรับค้นหาตำแหน่งหนังสือ หรือเราสามารถดูหมวดหมู่เพื่อประหยัดเวลาได้นะ",
+                explanation: "ถูกต้องครับ! การใช้ระบบค้นหาข้อมูลเพื่อหาหมวดหมู่และตำแหน่งชั้นหนังสือ เป็นการแก้ปัญหาอย่างมีระบบและประหยัดเวลาที่สุด"
+            },
+            {
+                id: 4,
+                title: "จัดโต๊ะเขียนหนังสือ (หาข้อผิดพลาด)",
+                icon: "🧹",
+                type: "single_choice",
+                description: "โต๊ะเรียนของน้องโป้งรกมาก น้องโป้งจึงเขียนขั้นตอนการทำความสะอาดโต๊ะไว้ แต่มีขั้นตอนหนึ่งผิดพลาด! ทำให้กระเป๋าหรือเอกสารเสียหายได้",
+                question: "❓ ขั้นตอนใดต่อไปนี้เป็นขั้นตอนที่ผิดพลาด (Error / Bug)?",
+                options: [
+                    { id: "A", text: "ก. เก็บเศษขยะบนโต๊ะทิ้งถังขยะ", correct: false },
+                    { id: "B", text: "ข. ฉีดน้ำเปียกโชกบนโต๊ะก่อนเก็บเอกสารและสมุด", correct: true },
+                    { id: "C", text: "ค. จัดเรียงหนังสือเข้าชั้นให้เรียบร้อย", correct: false },
+                    { id: "D", text: "ง. ใช้ผ้าแห้งเช็ดฝุ่นบนโต๊ะ", correct: false }
+                ],
+                hint: "ถ้าเราฉีดน้ำใส่โต๊ะก่อนย้ายเอกสารกระดาษออก กระดาษจะเกิดอะไรขึ้นนะ?",
+                explanation: "เก่งมากครับ! การฉีดน้ำก่อนเก็บเอกสารจะทำให้หนังสือเปียกเสียหาย การตรวจสอบหาข้อผิดพลาด (Debugging) ช่วยให้เราปรับปรุงขั้นตอนให้ถูกต้องได้"
+            },
+            {
+                id: 5,
+                title: "วางแผนเดินทางไปสวนสาธารณะ",
+                icon: "🌳",
+                type: "single_choice",
+                description: "ข้าวหอมต้องการเดินไปสวนสาธารณะ แต่ระหว่างทางเจอปัญหาน้ำท่วมขังแอ่งใหญ่ขวางทางอยู่ ข้าวหอมควรใช้เงื่อนไขใดในการแก้ปัญหา?",
+                question: "❓ การตัดสินใจแก้ปัญหาด้วยเงื่อนไขใดเหมาะสมที่สุด?",
+                options: [
+                    { id: "A", text: "ก. ถอดรองเท้าแล้วลุยน้ำขังเข้าไปเลย", correct: false },
+                    { id: "B", text: "ข. ถ้าน้ำขังขวางทาง ให้เลี้ยวขวาใช้เส้นทางเดินอ้อมที่ปลอดภัยกว่า", correct: true },
+                    { id: "C", text: "ค. ยืนรอที่เดิมจนกว่าน้ำขังจะแห้งหมด", correct: false },
+                    { id: "D", text: "ง. เดินหลับตาข้ามน้ำขังไปเลย", correct: false }
+                ],
+                hint: "การแก้ปัญหาที่ดี ต้องคำนึงถึงความปลอดภัยและความสำเร็จของเป้าหมายด้วยนะ",
+                explanation: "ยอดเยี่ยมมากครับ! เมื่อเจออุปสรรค เราควรเลือกเส้นทางสำรองที่มีความปลอดภัย เพื่อให้บรรลุเป้าหมายได้อย่างสำเร็จ"
+            }
+        ];
+
+        let gameState = {
+            currentLevelIdx: 0,
+            score: 0,
+            stars: [0, 0, 0, 0, 0], // Stars per level (0-3)
+            attempts: [0, 0, 0, 0, 0], // Track attempt count
+            userSequence: [] // For ordering question type
+        };
+
+        // Navigation
+        function showScreen(screenId) {
+            playSound('click');
+            const screens = ['screen-start', 'screen-guide', 'screen-levels', 'screen-gameplay', 'screen-summary'];
+            screens.forEach(id => {
+                const el = document.getElementById(id);
+                if (id === screenId) {
+                    el.classList.remove('hidden');
+                    el.classList.add('flex');
+                } else {
+                    el.classList.add('hidden');
+                    el.classList.remove('flex');
+                }
+            });
+
+            if (screenId === 'screen-levels') {
+                renderLevelsGrid();
+            }
+        }
+
+        function startGame() {
+            showScreen('screen-levels');
+        }
+
+        function renderLevelsGrid() {
+            const grid = document.getElementById('levels-grid');
+            grid.innerHTML = '';
+
+            let totalStars = gameState.stars.reduce((a, b) => a + b, 0);
+            document.getElementById('total-stars-count').innerText = totalStars;
+
+            LEVELS_DATA.forEach((lvl, idx) => {
+                const isUnlocked = idx === 0 || gameState.stars[idx - 1] > 0;
+                const starCount = gameState.stars[idx];
+
+                let starsHtml = '';
+                for (let i = 1; i <= 3; i++) {
+                    if (i <= starCount) {
+                        starsHtml += '<i class="fa-solid fa-star star-gold text-sm"></i>';
+                    } else {
+                        starsHtml += '<i class="fa-solid fa-star star-gray text-sm"></i>';
+                    }
+                }
+
+                const card = document.createElement('div');
+                card.className = `p-4 rounded-2xl border-2 flex flex-col justify-between transition-all ${
+                    isUnlocked 
+                        ? 'bg-white border-indigo-200 hover:border-indigo-400 hover:shadow-lg cursor-pointer' 
+                        : 'bg-gray-100 border-gray-200 opacity-60 cursor-not-allowed'
+                }`;
+
+                card.innerHTML = `
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-3xl">${lvl.icon}</span>
+                        <div class="flex gap-1">${starsHtml}</div>
+                    </div>
+                    <div>
+                        <span class="text-xs font-bold text-indigo-500">ด่านที่ ${lvl.id}</span>
+                        <h4 class="font-bold text-gray-800 text-base">${lvl.title}</h4>
+                    </div>
+                    <div class="mt-4 pt-2 border-t border-gray-100 flex items-center justify-between">
+                        ${isUnlocked 
+                            ? `<span class="text-xs text-emerald-600 font-bold flex items-center gap-1"><i class="fa-solid fa-play"></i> ${starCount > 0 ? 'เล่นอีกครั้ง' : 'เริ่มภารกิจ'}</span>` 
+                            : `<span class="text-xs text-gray-400 font-bold flex items-center gap-1"><i class="fa-solid fa-lock"></i> ปลดล็อกเมื่อผ่านด่านก่อนหน้า</span>`}
+                    </div>
+                `;
+
+                if (isUnlocked) {
+                    card.onclick = () => loadLevel(idx);
+                }
+
+                grid.appendChild(card);
+            });
+        }
+
+        function loadLevel(levelIdx) {
+            gameState.currentLevelIdx = levelIdx;
+            const lvl = LEVELS_DATA[levelIdx];
+            gameState.userSequence = [];
+
+            document.getElementById('game-level-badge').innerText = `ด่านที่ ${lvl.id}`;
+            document.getElementById('level-icon').innerText = lvl.icon;
+            document.getElementById('level-title').innerText = lvl.title;
+            document.getElementById('level-description').innerText = lvl.description;
+            document.getElementById('level-question').innerText = lvl.question;
+            document.getElementById('current-score').innerText = gameState.score;
+
+            // Render current level stars expectation
+            updateStarsDisplay(3 - Math.min(gameState.attempts[levelIdx], 2));
+
+            const container = document.getElementById('interactive-area');
+            container.innerHTML = '';
+
+            if (lvl.type === 'single_choice') {
+                lvl.options.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.className = "opt-btn w-full text-left p-3.5 sm:p-4 rounded-xl border-2 border-gray-200 hover:border-indigo-400 bg-white hover:bg-indigo-50/50 transition font-medium text-gray-800 text-sm sm:text-base flex items-center justify-between";
+                    btn.dataset.id = opt.id;
+                    btn.innerHTML = `
+                        <span>${opt.text}</span>
+                        <i class="fa-regular fa-circle text-gray-300 opt-check"></i>
+                    `;
+                    btn.onclick = () => selectSingleOption(btn, opt.id);
+                    container.appendChild(btn);
+                });
+            } else if (lvl.type === 'sequence') {
+                // Render tap-to-order UI
+                const instruction = document.createElement('div');
+                instruction.className = "text-xs text-indigo-600 font-bold mb-2";
+                instruction.innerText = "📌 แตะเลือกขั้นตอนตามลำดับที่ถูกต้อง:";
+                container.appendChild(instruction);
+
+                // Pool of items (shuffled display copy)
+                const pool = document.createElement('div');
+                pool.id = "sequence-pool";
+                pool.className = "grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4";
+
+                // Selected order slots
+                const selectedBox = document.createElement('div');
+                selectedBox.id = "sequence-selected";
+                selectedBox.className = "bg-slate-100 p-3 rounded-2xl border-2 border-dashed border-slate-300 min-h-[100px] space-y-2";
+                selectedBox.innerHTML = `<div id="empty-seq-msg" class="text-center text-gray-400 text-xs py-4">ยังไม่ได้เลือกขั้นตอน (กดที่ตัวเลือกด้านบนเพื่อจัดลำดับ)</div>`;
+
+                lvl.items.forEach(item => {
+                    const itemBtn = document.createElement('button');
+                    itemBtn.className = "seq-item bg-white p-3 rounded-xl border-2 border-slate-200 text-left font-medium text-xs sm:text-sm shadow-sm hover:border-indigo-400 transition";
+                    itemBtn.dataset.id = item.id;
+                    itemBtn.innerText = item.text;
+                    itemBtn.onclick = () => handleSequenceTap(item, itemBtn);
+                    pool.appendChild(itemBtn);
+                });
+
+                container.appendChild(pool);
+                container.appendChild(selectedBox);
+            }
+
+            showScreen('screen-gameplay');
+        }
+
+        let selectedOptionId = null;
+
+        function selectSingleOption(btn, optId) {
+            playSound('click');
+            selectedOptionId = optId;
+            document.querySelectorAll('.opt-btn').forEach(b => {
+                b.classList.remove('border-indigo-500', 'bg-indigo-50', 'text-indigo-900');
+                b.classList.add('border-gray-200', 'bg-white');
+                const check = b.querySelector('.opt-check');
+                if (check) {
+                    check.className = 'fa-regular fa-circle text-gray-300 opt-check';
+                }
+            });
+
+            btn.classList.remove('border-gray-200', 'bg-white');
+            btn.classList.add('border-indigo-500', 'bg-indigo-50', 'text-indigo-900');
+            const check = btn.querySelector('.opt-check');
+            if (check) {
+                check.className = 'fa-solid fa-circle-check text-indigo-600 opt-check';
+            }
+        }
+
+        function handleSequenceTap(item, btn) {
+            playSound('click');
+            const emptyMsg = document.getElementById('empty-seq-msg');
+            if (emptyMsg) emptyMsg.style.display = 'none';
+
+            const selectedBox = document.getElementById('sequence-selected');
+            const pool = document.getElementById('sequence-pool');
+
+            const idxInUserSeq = gameState.userSequence.indexOf(item.id);
+
+            if (idxInUserSeq === -1) {
+                // Add to sequence
+                gameState.userSequence.push(item.id);
+                btn.classList.add('opacity-40', 'pointer-events-none');
+
+                const tag = document.createElement('div');
+                tag.id = `selected-${item.id}`;
+                tag.className = "bg-indigo-600 text-white p-2.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center justify-between pop-in";
+                tag.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <span class="bg-indigo-800 text-yellow-300 font-extrabold w-6 h-6 rounded-full flex items-center justify-center text-xs">
+                            ${gameState.userSequence.length}
+                        </span>
+                        <span>${item.text}</span>
+                    </div>
+                    <button onclick="removeSequenceItem('${item.id}')" class="text-white/80 hover:text-white">
+                        <i class="fa-solid fa-circle-xmark"></i>
+                    </button>
+                `;
+                selectedBox.appendChild(tag);
+            }
+        }
+
+        function removeSequenceItem(itemId) {
+            playSound('click');
+            const idx = gameState.userSequence.indexOf(itemId);
+            if (idx > -1) {
+                gameState.userSequence.splice(idx, 1);
+            }
+
+            // Refresh UI list
+            const lvl = LEVELS_DATA[gameState.currentLevelIdx];
+            const selectedBox = document.getElementById('sequence-selected');
+            selectedBox.innerHTML = '';
+
+            if (gameState.userSequence.length === 0) {
+                selectedBox.innerHTML = `<div id="empty-seq-msg" class="text-center text-gray-400 text-xs py-4">ยังไม่ได้เลือกขั้นตอน (กดที่ตัวเลือกด้านบนเพื่อจัดลำดับ)</div>`;
+            } else {
+                gameState.userSequence.forEach((id, index) => {
+                    const itemObj = lvl.items.find(i => i.id === id);
+                    const tag = document.createElement('div');
+                    tag.id = `selected-${id}`;
+                    tag.className = "bg-indigo-600 text-white p-2.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center justify-between pop-in";
+                    tag.innerHTML = `
+                        <div class="flex items-center gap-2">
+                            <span class="bg-indigo-800 text-yellow-300 font-extrabold w-6 h-6 rounded-full flex items-center justify-center text-xs">
+                                ${index + 1}
+                            </span>
+                            <span>${itemObj.text}</span>
+                        </div>
+                        <button onclick="removeSequenceItem('${id}')" class="text-white/80 hover:text-white">
+                            <i class="fa-solid fa-circle-xmark"></i>
+                        </button>
+                    `;
+                    selectedBox.appendChild(tag);
+                });
+            }
+
+            // Restore button in pool
+            const poolBtns = document.querySelectorAll('#sequence-pool .seq-item');
+            poolBtns.forEach(b => {
+                if (b.dataset.id === itemId) {
+                    b.classList.remove('opacity-40', 'pointer-events-none');
+                }
+            });
+        }
+
+        function updateStarsDisplay(count) {
+            const container = document.getElementById('stars-display');
+            container.innerHTML = '';
+            for (let i = 1; i <= 3; i++) {
+                if (i <= count) {
+                    container.innerHTML += '<i class="fa-solid fa-star star-gold"></i>';
+                } else {
+                    container.innerHTML += '<i class="fa-solid fa-star star-gray"></i>';
+                }
+            }
+        }
+
+        function checkAnswer() {
+            const lvl = LEVELS_DATA[gameState.currentLevelIdx];
+            let isCorrect = false;
+
+            if (lvl.type === 'single_choice') {
+                if (!selectedOptionId) {
+                    showCustomToast("กรุณาเลือกคำตอบก่อนนะครับ!");
+                    return;
+                }
+                const selectedOpt = lvl.options.find(o => o.id === selectedOptionId);
+                isCorrect = selectedOpt ? selectedOpt.correct : false;
+            } else if (lvl.type === 'sequence') {
+                if (gameState.userSequence.length < lvl.correctOrder.length) {
+                    showCustomToast("กรุณาเลือกขั้นตอนให้ครบทุกข้อก่อนนะครับ!");
+                    return;
+                }
+                isCorrect = JSON.stringify(gameState.userSequence) === JSON.stringify(lvl.correctOrder);
+            }
+
+            const attempts = gameState.attempts[gameState.currentLevelIdx];
+
+            if (isCorrect) {
+                playSound('correct');
+                let earnedStars = Math.max(1, 3 - attempts);
+                let earnedScore = earnedStars * 100;
+
+                gameState.stars[gameState.currentLevelIdx] = Math.max(gameState.stars[gameState.currentLevelIdx], earnedStars);
+                gameState.score += earnedScore;
+
+                showResultModal(true, lvl.explanation, earnedStars);
+            } else {
+                playSound('wrong');
+                gameState.attempts[gameState.currentLevelIdx] += 1;
+                let currentExpectedStars = Math.max(1, 3 - gameState.attempts[gameState.currentLevelIdx]);
+                updateStarsDisplay(currentExpectedStars);
+
+                showResultModal(false, "ยังไม่ถูกต้องนะลองคิดวิเคราะห์ใหม่อีกครั้ง หรือกดดูคำใบ้จากน้องปัญญาได้เลย!", 0);
+            }
+        }
+
+        function showResultModal(isSuccess, message, starsEarned) {
+            const modal = document.getElementById('modal-result');
+            const icon = document.getElementById('result-icon');
+            const title = document.getElementById('result-title');
+            const msg = document.getElementById('result-message');
+            const btn = document.getElementById('btn-result-action');
+
+            if (isSuccess) {
+                icon.innerText = "🎉";
+                title.innerText = "ถูกต้องแล้วครับ! เก่งมาก";
+                title.className = "text-2xl font-extrabold text-emerald-600 mb-2";
+                msg.innerText = message;
+
+                const isLastLevel = gameState.currentLevelIdx === LEVELS_DATA.length - 1;
+                if (isLastLevel) {
+                    btn.innerHTML = `ดูสรุปผลคะแนน <i class="fa-solid fa-trophy"></i>`;
+                    btn.onclick = () => {
+                        closeResultModal();
+                        showFinalSummary();
+                    };
+                } else {
+                    btn.innerHTML = `ลุยด่านต่อไป <i class="fa-solid fa-arrow-right"></i>`;
+                    btn.onclick = () => {
+                        closeResultModal();
+                        loadLevel(gameState.currentLevelIdx + 1);
+                    };
+                }
+            } else {
+                icon.innerText = "💡";
+                title.innerText = "ลองใหม่อีกครั้งนะ!";
+                title.className = "text-2xl font-extrabold text-amber-600 mb-2";
+                msg.innerText = message;
+                btn.innerHTML = `ลองแก้ปัญหาอีกครั้ง <i class="fa-solid fa-rotate-right"></i>`;
+                btn.onclick = () => closeResultModal();
+            }
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeResultModal() {
+            playSound('click');
+            const modal = document.getElementById('modal-result');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            selectedOptionId = null;
+        }
+
+        function showHintModal() {
+            playSound('click');
+            const lvl = LEVELS_DATA[gameState.currentLevelIdx];
+            document.getElementById('hint-text').innerText = lvl.hint;
+            const modal = document.getElementById('modal-hint');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeHintModal() {
+            playSound('click');
+            const modal = document.getElementById('modal-hint');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function showCustomToast(text) {
+            playSound('wrong');
+            const toast = document.createElement('div');
+            toast.className = "fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-xl text-xs sm:text-sm font-bold shadow-lg z-50 pop-in";
+            toast.innerText = text;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.remove();
+            }, 2000);
+        }
+
+        function showFinalSummary() {
+            playSound('star');
+            const totalStars = gameState.stars.reduce((a, b) => a + b, 0);
+            document.getElementById('summary-total-stars').innerText = totalStars;
+            document.getElementById('summary-total-score').innerText = gameState.score;
+
+            const starsContainer = document.getElementById('summary-stars');
+            starsContainer.innerHTML = '';
+            for (let i = 1; i <= 3; i++) {
+                if (i <= Math.round(totalStars / 5)) {
+                    starsContainer.innerHTML += '<i class="fa-solid fa-star star-gold"></i>';
+                } else {
+                    starsContainer.innerHTML += '<i class="fa-solid fa-star star-gray"></i>';
+                }
+            }
+
+            showScreen('screen-summary');
+        }
+
+        // Initialize App
+        window.onload = function() {
+            // Screen starts at start screen
+            showScreen('screen-start');
+        };
+    </script>
+</body>
+</html>
